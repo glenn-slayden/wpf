@@ -24,6 +24,7 @@ namespace System.Windows.Controls
     public class DataGridCell : ContentControl, IProvideDataGridColumn
     {
         private static readonly bool IsDataGridKeyboardSortDisabled;
+        private static readonly bool OptOutOfGridColumnResizeUsingKeyboard;
 
         #region Constructors
 
@@ -49,6 +50,7 @@ namespace System.Windows.Controls
             EventManager.RegisterClassHandler(typeof(DataGridCell), GotFocusEvent, new RoutedEventHandler(OnAnyGotFocus), true);
             
             AppContext.TryGetSwitch("System.Windows.Controls.DisableDataGridKeyboardSort", out IsDataGridKeyboardSortDisabled);
+            AppContext.TryGetSwitch("System.Windows.Controls.OptOutOfGridColumnResizeUsingKeyboard", out OptOutOfGridColumnResizeUsingKeyboard);
         }
 
         /// <summary>
@@ -968,7 +970,7 @@ namespace System.Windows.Controls
         /// </summary>
         protected override void OnKeyDown(KeyEventArgs e)
         {
-            if (!e.Handled)
+            if (!OptOutOfGridColumnResizeUsingKeyboard && !e.Handled)
             {
                 const ModifierKeys ModifierMask = ModifierKeys.Alt | ModifierKeys.Control | ModifierKeys.Shift | ModifierKeys.Windows;
                 ModifierKeys modifierKeys = Keyboard.Modifiers & ModifierMask;
@@ -1006,7 +1008,6 @@ namespace System.Windows.Controls
                     }
                 }
             }
-
             SendInputToColumn(e);
         }
 
